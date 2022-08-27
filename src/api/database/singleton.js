@@ -1,12 +1,8 @@
 require("dotenv").config();
 const mysql = require("mysql");
 let connection = null;
-const HOST = process.env.HOST;
-const USER = process.env.USER;
-const PASSWORD = process.env.PASSWORD;
-const DATABASE = process.env.DATABASE;
 
-function singleton() {
+module.exports = function singleton() {
   try {
     if (connection == null) {
       connection = mysql.createConnection({
@@ -24,10 +20,10 @@ function singleton() {
   } catch (e) {
     console.log("Error ocurred returning database instance: " + e);
   }
-}
+};
 
-function bla() {
-  /* console.log(
+/* function bla() {
+  console.log(
     process.env.HOST +
       " " +
       process.env.USER +
@@ -35,7 +31,7 @@ function bla() {
       process.env.PASSWORD +
       " " +
       process.env.DATABASE
-  ); */
+  );
 
   let con = singleton();
   var sql =
@@ -45,5 +41,4 @@ function bla() {
     console.log("1 record inserted");
   });
 }
-bla();
-module.exports = singleton;
+bla(); */
