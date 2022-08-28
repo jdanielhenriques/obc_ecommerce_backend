@@ -1,14 +1,33 @@
 "use strict";
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-exports.uploadImage = upload.single("image");
-
+const path = require("path");
+var multiparty = require("multiparty");
+let options = {
+  autoFiles: true,
+  uploadDir: path.join(__dirname, "../../../public/images/"),
+};
+var form = new multiparty.Form(options);
+const localFileDeleteMiddleware = require('../../middlewares/images/imageHandler')
 const ImagesController = require("../../controllers/Images/images.controller");
 
 const express = require("express");
 //const crimePrepertratorControllerInstance = require("../controllers/crimePerpretator.controller");
-let router = express.Router();
+const router = express.Router();
+var storage = multer.diskStorage({
+  destination: (req, file, callBack) => {
+    callBack(null, "../../../public/images/");
+  },
+  filename: (req, file, callBack) => {
+    callBack(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
 
+var upload = multer({
+  storage: storage,
+});
 router.route("/get").get(async (request, response) => {
   try {
     const result = await ImagesController.getImages();
@@ -19,32 +38,42 @@ router.route("/get").get(async (request, response) => {
   }
 });
 
-router.route("/insert").post(async (request, response) => {
-  try {
-    console.log(request.file);
-    /*     console.log(request.files['image'][0]);
-    console.log(request.body.image_description);
-    console.log(request.body.Products_idProducts);
-    const result = ImagesController.insertImages(
-      request.body.image,
-      request.body.image_description,
-      request.body.Products_idProducts
-    );
-
-    response.status(200).send(result); */
-  } catch (e) {
-    response.status(500).send(e);
-  }
-});
+router
+  .route("/insert", upload.single("image"))
+  .post(async (request, response) => {
+    try {
+      form.parse(request, function (err, fields, files) {
+        if (err) {
+          throw err;
+        } else {
+          const result = ImagesController.insertImages(
+            files.image[0].path,
+            fields.image_description[0],
+            parseInt(fields.Products_idProducts[0])
+          );
+          console.log(result);
+        }
+      });
+    } catch (e) {
+      response.status(500).send(e);
+    }
+  });
 
 router.route("/update").post(async (request, response) => {
   try {
-    const result = ImagesController.updateImages(
-      request.body.idImages,
-      request.body.image,
-      request.body.image_description,
-      request.body.Products_idProducts
-    );
+    form.parse(request, function (err, fields, files) {
+      if (err) {
+        throw err;
+      } else {
+        const result = ImagesController.updateImages(
+          parseInt(fields.idImages[0]),
+          files.image[0].path,
+          fields.image_description[0],
+          parseInt(fields.Products_idProducts[0])
+        );
+        console.log(result);
+      }
+    });
 
     response.status(200).send(result);
   } catch (e) {
@@ -54,7 +83,17 @@ router.route("/update").post(async (request, response) => {
 
 router.route("/delete").post(async (request, response) => {
   try {
-    const result = ImagesController.deleteImages(request.body.idImages);
+    form.parse(request, function (err, fields, files) {
+      if (err) {
+        throw err;
+      } else {
+        let id = parseInt(fields.idImages[0])
+        localFileDeleteMiddleware.deleteLocalImage(id)
+        const result = ImagesController.deleteImages(id)
+        console.log(result);
+      }
+    });
+
     response.status(200).send(result);
   } catch (e) {
     response.status(500).send(e);

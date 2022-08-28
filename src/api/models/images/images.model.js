@@ -5,7 +5,7 @@ const SQL = require("sql-template-strings");
 function insertImages(image, image_description, Products_idProducts) {
   try {
     instance.query(
-      SQL`INSERT INTO Images (image, image_description, Products_idProducts)VALUES (${image}, ${image_description},${Products_idProducts};`
+      SQL`INSERT INTO Images (image, image_description, Products_idProducts)VALUES (${image}, ${image_description},${Products_idProducts});`
     );
     console.log("1 record inserted");
   } catch (err) {
@@ -38,32 +38,6 @@ async function getImages() {
         }
       );
     });
-
-    /*     let result = null
-    await instance.query("SELECT * FROM Products", function (error, results, fields) {
-     console.log(JSON.stringify(results));
-      result= JSON.stringify(results);
-    });
-
-        console.log("Here");
-
-    console.log(result);
-    return result */
-    /*   instance.query("SELECT * FROM Products", function (result) {
-      console.log(result);
-      return result; 
-    });*/
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-function updateImages(idImages, image, image_description, Products_idProducts) {
-  try {
-    instance.query(
-      SQL`UPDATE Images SET idImages = ${idImages}, image = ${image},
-image_description = ${image_description}, Products_idProducts = ${Products_idProducts} WHERE idImages = ${idImages};`
-    );
   } catch (err) {
     console.log(err);
   }
@@ -71,16 +45,61 @@ image_description = ${image_description}, Products_idProducts = ${Products_idPro
 
 function deleteImages(idImages) {
   try {
-    console.log(idCategories);
     instance.query(SQL`DELETE FROM Images WHERE idImages = ${idImages}`);
   } catch (err) {
     console.log(err);
   }
 }
+function updateImages(idImages, image, image_description, Products_idProducts) {
+  try {
+    instance.query(
+      SQL`UPDATE Images SET image = ${image},
+image_description = ${image_description}, Products_idProducts = ${Products_idProducts} WHERE idImages = ${idImages};`
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
 
+async function getImagePathById(idImages) {
+  try {
+    return new Promise(function (resolve, reject) {
+      let result = null;
+      instance.query(
+        SQL`SELECT image FROM Images where idImages = ${idImages}`,
+        function (error, results, fields) {
+          result = (results[0].image);
+
+          resolve(result);
+        },
+        function (error) {
+          reject(false);
+          throw new Error("Error: " + error);
+        },
+        function (error) {
+          reject(undefined);
+          throw new Error("error: " + error.message);
+        },
+        function () {
+          console.log("ok");
+        }
+      );
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function a() {
+  let b = await getImagePathById(4);
+  console.log(b);
+}
+
+a();
 module.exports = {
   insertImages,
   deleteImages,
   updateImages,
   getImages,
+  getImagePathById,
 };

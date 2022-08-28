@@ -1,13 +1,11 @@
 require("dotenv").config();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const path = require("path");
 const bodyParser = require("body-parser");
-
+const express = require("express");
 const app = require("express")();
 
 const cors = require("cors");
-
-app.use(bodyParser.json());
 
 const productsRouter = require("./api/routes/products/products.route");
 
@@ -16,6 +14,12 @@ const categoriesRouter = require("./api/routes/categories/categories.route");
 const imagesRouter = require("./api/routes/images/images.route");
 
 app.use(cors());
+app.use(express.static("./public"));
+app.use(bodyParser.json());
+app.use(  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 app.listen(process.env.PORT, () =>
   console.log(`server is listening! ${process.env.PORT}`)
