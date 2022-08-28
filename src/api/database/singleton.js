@@ -2,43 +2,20 @@ require("dotenv").config();
 const mysql = require("mysql");
 let connection = null;
 
-module.exports = function singleton() {
+function singleton() {
   try {
     if (connection == null) {
       connection = mysql.createConnection({
-        host: "localhost",
-        user: "ecommerce",
-        password: "password",
-        database: "obc_ecommerce",
-        /*         host: process.env.HOST,
-        user: process.env.USER,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE, */
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
       });
       return connection;
     } else return connection;
   } catch (e) {
     console.log("Error ocurred returning database instance: " + e);
   }
-};
-
-/* function bla() {
-  console.log(
-    process.env.HOST +
-      " " +
-      process.env.USER +
-      " " +
-      process.env.PASSWORD +
-      " " +
-      process.env.DATABASE
-  );
-
-  let con = singleton();
-  var sql =
-    "INSERT INTO Postal_code(postal_code, locality) VALUES ('12345690', 'popkjlhmç~j')";
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("1 record inserted");
-  });
 }
-bla(); */
+
+module.exports = singleton;
