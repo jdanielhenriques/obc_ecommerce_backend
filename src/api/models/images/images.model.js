@@ -90,12 +90,7 @@ async function getImagePathById(idImages) {
   }
 }
 
-async function a() {
-  let b = await getImagePathById(4);
-  console.log(b);
-}
 
-a();
 module.exports = {
   insertImages,
   deleteImages,

@@ -7,7 +7,7 @@ let options = {
   uploadDir: path.join(__dirname, "../../../public/images/"),
 };
 var form = new multiparty.Form(options);
-const localFileDeleteMiddleware = require('../../middlewares/images/imageHandler')
+const localFileDeleteMiddleware = require("../../middlewares/images/imageHandler");
 const ImagesController = require("../../controllers/Images/images.controller");
 
 const express = require("express");
@@ -46,14 +46,18 @@ router
         if (err) {
           throw err;
         } else {
+          let myArray = files.image[0].path.split("/");
           const result = ImagesController.insertImages(
-            files.image[0].path,
+            myArray[myArray.length - 1],
             fields.image_description[0],
             parseInt(fields.Products_idProducts[0])
           );
-          console.log(result);
+
+          
+          console.log("1 record inserted");
         }
       });
+      response.sendStatus(200)
     } catch (e) {
       response.status(500).send(e);
     }
@@ -87,9 +91,9 @@ router.route("/delete").post(async (request, response) => {
       if (err) {
         throw err;
       } else {
-        let id = parseInt(fields.idImages[0])
-        localFileDeleteMiddleware.deleteLocalImage(id)
-        const result = ImagesController.deleteImages(id)
+        let id = parseInt(fields.idImages[0]);
+        localFileDeleteMiddleware.deleteLocalImage(id);
+        const result = ImagesController.deleteImages(id);
         console.log(result);
       }
     });

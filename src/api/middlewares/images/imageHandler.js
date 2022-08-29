@@ -11,3 +11,4 @@ async function deleteLocalImage(idImages) {
 module.exports = {
 deleteLocalImage
 };
+ 

@@ -24,11 +24,11 @@ async function getProducts() {
     return new Promise(function (resolve, reject) {
       let result = null;
       instance.query(
-        "SELECT * FROM Products",
+        "SELECT Products.product_name, Images.image FROM obc_ecommerce.Products, obc_ecommerce.Images  WHERE Products.idProducts =  Images.Products_idProducts",
         function (error, results, fields) {
           console.log(JSON.stringify(results));
           result = JSON.stringify(results);
-
+          console.log(result);
           resolve(result);
         },
         function (error) {
@@ -44,21 +44,6 @@ async function getProducts() {
         }
       );
     });
-
-    /*     let result = null
-    await instance.query("SELECT * FROM Products", function (error, results, fields) {
-     console.log(JSON.stringify(results));
-      result= JSON.stringify(results);
-    });
-
-        console.log("Here");
-
-    console.log(result);
-    return result */
-    /*   instance.query("SELECT * FROM Products", function (result) {
-      console.log(result);
-      return result; 
-    });*/
   } catch (err) {
     console.log(err);
   }
